@@ -4,6 +4,13 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
+class Tag(models.Model):
+    tag = models.CharField('Тег', max_length=20)
+
+    def __str__(self):
+        return self.tag
+
+
 class Published(models.Model):
     """Абстрактная модель"""
     is_published = models.BooleanField(default=True,
