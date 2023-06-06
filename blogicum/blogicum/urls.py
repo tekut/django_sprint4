@@ -6,6 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.edit import CreateView
 
 
+handler403 = 'core.views.csrf_failure'
 handler404 = 'core.views.page_not_found'
 handler500 = 'core.views.server_error'
 

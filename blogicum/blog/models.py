@@ -1,14 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
+
 User = get_user_model()
-
-
-class Tag(models.Model):
-    tag = models.CharField('Тег', max_length=20)
-
-    def __str__(self):
-        return self.tag
 
 
 class Published(models.Model):
@@ -83,10 +77,29 @@ class Post(Published):
                                  verbose_name='Категория',
                                  null=True,
                                  )
+    image = models.ImageField('Фото', upload_to='post_images', blank=True)
 
     class Meta:
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
+        ordering = ('-pub_date',)
 
     def __str__(self):
         return self.title
+
+
+class Comment(Published):
+    """Комментарий"""
+    text = models.TextField('Текст комментария')
+    post = models.ForeignKey(Post,
+                             on_delete=models.CASCADE,
+                             related_name='comment',
+                             )
+    author = models.ForeignKey(User,
+                               on_delete=models.CASCADE,
+                               verbose_name='Автор комментария',
+                               related_name='comment',
+                               )
+
+    class Meta:
+        ordering = ('created_at',)

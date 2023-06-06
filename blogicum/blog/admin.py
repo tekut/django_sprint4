@@ -1,5 +1,5 @@
 from django.contrib import admin
-from blog.models import Category, Location, Post, Tag
+from blog.models import Category, Location, Post, Comment
 
 
 class PostAdmin(admin.ModelAdmin):
@@ -50,4 +50,4 @@ admin.site.empty_value_display = 'Не задано'
 admin.site.register(Post, PostAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Location, LocationAdmin)
-admin.site.register(Tag)
+admin.site.register(Comment)
