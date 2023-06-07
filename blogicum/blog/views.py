@@ -3,9 +3,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from blog.models import Category, Post, Comment
 from blog.constants import POSTS_NUMBER_LIMIT, PAGE_NUMBER
-from django.db.models import Count, Prefetch
+from django.db.models import Count
 
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 
@@ -15,7 +14,6 @@ from django.urls import reverse_lazy, reverse
 from blog.forms import PostForm, UserForm, CommentForm
 
 
-#@login_required
 def index(request):
     post_list = Post.objects.select_related(
         'location',
@@ -38,7 +36,6 @@ def index(request):
     return render(request, 'blog/index.html', context)
 
 
-#@login_required
 def post_detail(request, id):
     post_list = get_object_or_404(
         Post.objects.select_related(
@@ -55,12 +52,11 @@ def post_detail(request, id):
     context = {
         'post': post_list,
         'form': CommentForm(),
-        'comments': Comment.objects.filter(post_id=id).order_by('-created_at'),
+        'comments': Comment.objects.filter(post_id=id),
         }
     return render(request, 'blog/detail.html', context)
 
 
-#@login_required
 def category_posts(request, category_slug):
     category = get_object_or_404(
         Category.objects.filter(
@@ -91,7 +87,10 @@ class ProfileListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['profile'] = get_object_or_404(User, username=self.kwargs.get('username'))
+        context['profile'] = get_object_or_404(
+            User,
+            username=self.kwargs.get('username')
+            )
         return context
 
     def get_queryset(self):
