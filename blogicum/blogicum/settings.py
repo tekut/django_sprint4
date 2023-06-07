@@ -4,7 +4,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-(^e94(n&&+wf7q5av9v@ehe&r=&pcj^9$s_59db#l8@g%t^@4q'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -103,4 +103,4 @@ LOGIN_REDIRECT_URL = 'blog:index'
 
 LOGIN_URL = 'login'
 
-#CSRF_FAILURE_VIEW = 'pages.views.csrf_failure'
+CSRF_FAILURE_VIEW = 'pages.views.csrf_failure'
