@@ -55,7 +55,7 @@ def post_detail(request, id):
     context = {
         'post': post_list,
         'form': CommentForm(),
-        'comment': Comment.objects.filter(post_id=id),
+        'comments': Comment.objects.filter(post_id=id).order_by('-created_at'),
         }
     return render(request, 'blog/detail.html', context)
 
