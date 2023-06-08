@@ -17,15 +17,15 @@ def index(request):
         'location',
         'author',
         'category',
-        ).filter(
+    ).filter(
         pub_date__lte=timezone.now(),
         is_published=True,
         category__is_published=True,
-        ).order_by(
+    ).order_by(
         '-pub_date',
-        ).annotate(
+    ).annotate(
         comment_count=Count('comment')
-        )
+    )
 
     paginator = Paginator(post_list, POSTS_NUMBER_LIMIT)
     page_number = request.GET.get(PAGE_NUMBER)
@@ -40,7 +40,7 @@ def post_detail(request, id):
             'location',
             'author',
             'category',
-            ).filter(
+        ).filter(
             pub_date__lte=timezone.now(),
             is_published=True,
             category__is_published=True,
@@ -51,7 +51,7 @@ def post_detail(request, id):
         'post': post_list,
         'form': CommentForm(),
         'comments': Comment.objects.filter(post_id=id),
-        }
+    }
     return render(request, 'blog/detail.html', context)
 
 
@@ -65,11 +65,11 @@ def category_posts(request, category_slug):
     post_list = category.post.filter(
         pub_date__lte=timezone.now(),
         is_published=True,
-        ).order_by(
+    ).order_by(
         '-pub_date',
-        ).annotate(
+    ).annotate(
         comment_count=Count('comment')
-        )
+    )
     paginator = Paginator(post_list, POSTS_NUMBER_LIMIT)
     page_number = request.GET.get(PAGE_NUMBER)
     page_obj = paginator.get_page(page_number)
@@ -88,7 +88,7 @@ class ProfileListView(ListView):
         context['profile'] = get_object_or_404(
             User,
             username=self.kwargs.get('username')
-            )
+        )
         return context
 
     def get_queryset(self):
