@@ -1,17 +1,15 @@
-from django.core.paginator import Paginator
-from django.shortcuts import render, get_object_or_404, redirect
-from django.utils import timezone
-from blog.models import Category, Post, Comment
-from blog.constants import POSTS_NUMBER_LIMIT, PAGE_NUMBER
-from django.db.models import Count
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-
-from django.views.generic import CreateView, ListView, DeleteView, UpdateView
+from django.core.paginator import Paginator
+from django.db.models import Count
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
+from django.utils import timezone
+from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 
+from blog.models import Category, Post, Comment
 from blog.forms import PostForm, UserForm, CommentForm
+from blog.constants import POSTS_NUMBER_LIMIT, PAGE_NUMBER
 
 
 def index(request):
@@ -70,7 +68,7 @@ def category_posts(request, category_slug):
         ).order_by(
         '-pub_date',
         ).annotate(
-        comment_count=Count("comment")
+        comment_count=Count('comment')
         )
     paginator = Paginator(post_list, POSTS_NUMBER_LIMIT)
     page_number = request.GET.get(PAGE_NUMBER)

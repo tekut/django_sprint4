@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from blog.models import Category, Location, Post, Comment
 
 
@@ -35,7 +36,7 @@ class CategoryAdmin(admin.ModelAdmin):
         'title',
         'description',
         'slug',
-    )
+        )
 
 
 class LocationAdmin(admin.ModelAdmin):
@@ -43,7 +44,7 @@ class LocationAdmin(admin.ModelAdmin):
         'is_published',
         'created_at',
         'name',
-    )
+        )
 
 
 admin.site.empty_value_display = 'Не задано'
