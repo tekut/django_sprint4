@@ -2,11 +2,16 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Count
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 
+from blog.mixins import (
+    PostFormValidMixin,
+    PostDispatchMixin,
+    CommentDispatchMixin,
+)
 from blog.models import Category, Post, Comment
 from blog.forms import PostForm, UserForm, CommentForm
 from blog.constants import POSTS_NUMBER_LIMIT, PAGE_NUMBER
@@ -109,50 +114,35 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         return reverse('blog:profile', args=[username])
 
 
-class PostCreateView(LoginRequiredMixin, CreateView):
+class PostCreateView(PostFormValidMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/create.html'
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
 
     def get_success_url(self):
         username = self.request.user.username
         return reverse('blog:profile', args=[username])
 
 
-class PostUpdateView(LoginRequiredMixin, UpdateView):
+class PostUpdateView(PostFormValidMixin, PostDispatchMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/create.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        if self.get_object().author != request.user:
-            return redirect('blog:post_detail', id=kwargs['pk'])
-        return super().dispatch(request, *args, **kwargs)
-
     def get_success_url(self):
         return reverse('blog:post_detail', args=[self.kwargs['pk']])
 
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
 
-
-class PostDeleteView(LoginRequiredMixin, DeleteView):
+class PostDeleteView(LoginRequiredMixin, PostDispatchMixin, DeleteView):
     model = Post
     template_name = 'blog/create.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        if self.get_object().author != request.user:
-            return redirect('blog:post_detail', id=kwargs['pk'])
-        return super().dispatch(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = {'instance': self.object}
+        context = dict(
+            **super().get_context_data(**kwargs),
+            form={'instance': self.object},
+            comments=self.object.comment.all(),
+        )
         return context
 
     def get_success_url(self):
@@ -174,16 +164,10 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
         return reverse('blog:post_detail', args=[self.kwargs['pk']])
 
 
-class CommentUpdateView(LoginRequiredMixin, UpdateView):
+class CommentUpdateView(LoginRequiredMixin, CommentDispatchMixin, UpdateView):
     model = Comment
     form_class = CommentForm
     template_name = 'blog/comment.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        comment = get_object_or_404(Comment, pk=kwargs['pk'])
-        if self.get_object().author != request.user:
-            return redirect('blog:post_detail', comment.post_id)
-        return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse(
@@ -191,15 +175,9 @@ class CommentUpdateView(LoginRequiredMixin, UpdateView):
         )
 
 
-class CommentDeleteView(LoginRequiredMixin, DeleteView):
+class CommentDeleteView(LoginRequiredMixin, CommentDispatchMixin, DeleteView):
     model = Comment
     template_name = 'blog/comment.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        comment = get_object_or_404(Comment, pk=kwargs['pk'])
-        if self.get_object().author != request.user:
-            return redirect('blog:post_detail', comment.post_id)
-        return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse(
