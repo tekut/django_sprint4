@@ -5,15 +5,15 @@ from django.db.models import Count
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
-from django.views.generic import CreateView, ListView, UpdateView, DeleteView
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from blog.mixins import (
-    PostFormValidMixin,
-    PostDispatchMixin,
     CommentDispatchMixin,
+    PostDispatchMixin,
+    PostFormValidMixin,
 )
-from blog.models import Category, Post, Comment
-from blog.forms import PostForm, UserForm, CommentForm
+from blog.models import Category, Comment, Post
+from blog.forms import CommentForm, PostForm, UserForm
 from blog.constants import POSTS_NUMBER_LIMIT, PAGE_NUMBER
 
 
@@ -29,7 +29,7 @@ def index(request):
     ).order_by(
         '-pub_date',
     ).annotate(
-        comment_count=Count('comment',)
+        comment_count=Count('comment'),
     )
 
     paginator = Paginator(post_list, POSTS_NUMBER_LIMIT)
@@ -73,7 +73,7 @@ def category_posts(request, category_slug):
     ).order_by(
         '-pub_date',
     ).annotate(
-        comment_count=Count('comment',)
+        comment_count=Count('comment'),
     )
     paginator = Paginator(post_list, POSTS_NUMBER_LIMIT)
     page_number = request.GET.get(PAGE_NUMBER)
@@ -92,14 +92,14 @@ class ProfileListView(ListView):
         context = super().get_context_data(**kwargs)
         context['profile'] = get_object_or_404(
             User,
-            username=self.kwargs.get('username',)
+            username=self.kwargs.get('username'),
         )
         return context
 
     def get_queryset(self):
         author = get_object_or_404(User, username=self.kwargs.get('username'))
         result = author.post.annotate(
-            comment_count=Count('comment',)
+            comment_count=Count('comment'),
         ).order_by('-pub_date')
         return result
 
@@ -171,7 +171,7 @@ class CommentUpdateView(LoginRequiredMixin, CommentDispatchMixin, UpdateView):
 
     def get_success_url(self):
         return reverse(
-            'blog:post_detail', kwargs={'id': self.kwargs['post_id']}
+            'blog:post_detail', args=[self.kwargs['post_id']]
         )
 
 
@@ -181,5 +181,5 @@ class CommentDeleteView(LoginRequiredMixin, CommentDispatchMixin, DeleteView):
 
     def get_success_url(self):
         return reverse(
-            'blog:post_detail', kwargs={'id': self.kwargs['post_id']}
+            'blog:post_detail', args=[self.kwargs['post_id']]
         )
