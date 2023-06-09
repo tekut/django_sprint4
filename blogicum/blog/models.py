@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth import get_user_model
 
 
@@ -77,7 +78,10 @@ class Post(Published):
                                  verbose_name='Категория',
                                  null=True,
                                  )
-    image = models.ImageField('Фото', upload_to='post_images', blank=True)
+    image = models.ImageField('Фото',
+                              upload_to=settings.POST_IMAGES_UPLOAD_PATH,
+                              blank=True,
+                              )
 
     class Meta:
         verbose_name = 'публикация'

@@ -3,6 +3,7 @@ from django.contrib import admin
 from blog.models import Category, Location, Post, Comment
 
 
+@admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ('is_published',
                     'created_at',
@@ -29,6 +30,7 @@ class PostAdmin(admin.ModelAdmin):
     list_display_links = ('title',)
 
 
+@admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = (
         'is_published',
@@ -39,6 +41,7 @@ class CategoryAdmin(admin.ModelAdmin):
     )
 
 
+@admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
     list_display = (
         'is_published',
@@ -47,8 +50,16 @@ class LocationAdmin(admin.ModelAdmin):
     )
 
 
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('is_published',
+                    'created_at',
+                    'text',
+                    'author',
+                    )
+    list_editable = ('text',
+                     )
+    list_display_links = ('is_published',)
+
+
 admin.site.empty_value_display = 'Не задано'
-admin.site.register(Post, PostAdmin)
-admin.site.register(Category, CategoryAdmin)
-admin.site.register(Location, LocationAdmin)
-admin.site.register(Comment)
