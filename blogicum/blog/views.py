@@ -7,14 +7,14 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
+from blog.constants import PAGE_NUMBER, POSTS_NUMBER_LIMIT
+from blog.forms import CommentForm, PostForm, UserForm
 from blog.mixins import (
     CommentDispatchMixin,
     PostDispatchMixin,
     PostFormValidMixin,
 )
 from blog.models import Category, Comment, Post
-from blog.forms import CommentForm, PostForm, UserForm
-from blog.constants import POSTS_NUMBER_LIMIT, PAGE_NUMBER
 
 
 def index(request):

@@ -1,8 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 
-from blog.models import Comment, Post
 from blog.forms import PostForm
+from blog.models import Comment, Post
 
 
 class PostFormValidMixin(LoginRequiredMixin,):
